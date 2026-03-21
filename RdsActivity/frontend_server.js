@@ -40,8 +40,6 @@ function hookDataHandler(dh) {
                 dh.dataToSend.rdsActive = false;
             }
         }
-        // stereoActive — bezpośrednio z dataToSend.st które ustawia datahandler
-        dh.dataToSend.stereoActive = dh.dataToSend.st === true;
         return orig.call(this, wss, receivedData, rdsWss);
     };
 
