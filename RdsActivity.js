@@ -1,7 +1,7 @@
 var pluginConfig = {
     name: 'RDS Activity',
     version: '1.0',
-    author: 'your-name',
+    author: 'R100DX',
     frontEndPath: 'RdsActivity/frontend.js'
 }
 
