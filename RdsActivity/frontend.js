@@ -1,10 +1,15 @@
 (function () {
     'use strict';
 
+    // ── Opcje ────────────────────────────────────────────────
+    const SHOW_RDS_ICON    = true;   // ikonka RDS obok stereo
+    const SHOW_STEREO_FILL = true;   // wypełnienie stereo na wykresie
+    // ─────────────────────────────────────────────────────────
+
     // Kolory z xdr-gtk (dark theme) — hierarchia: RDS > Stereo > Mono
     // Mono to domyślny kolor wykresu (--color-4), nie dodajemy osobnego datasetu
     const COLOR_STEREO_FILL = 'rgba(0, 130, 70, 0.35)';   // ciemniejszy zielony
-    const COLOR_RDS_FILL    = 'rgba(0, 210, 120, 0.55)';  // oryginalny kolor RDS
+    const COLOR_RDS_FILL    = 'rgba(0, 210, 120, 0.30)';  // oryginalny kolor RDS
 
     function waitForChart(cb) {
         if (window.signalChart &&
@@ -51,18 +56,18 @@
     }
 
     // Wstrzyknij gdy DOM gotowy
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', injectRdsIndicators);
-    } else {
-        injectRdsIndicators();
+    if (SHOW_RDS_ICON) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', injectRdsIndicators);
+        } else {
+            injectRdsIndicators();
+        }
+        setInterval(updateRdsIndicators, 200);
     }
-
-    // Aktualizuj co 200ms
-    setInterval(updateRdsIndicators, 200);
 
     waitForChart((chart) => {
         // Dataset 1 — Stereo (pod RDS)
-        if (chart.data.datasets.length < 2) {
+        if (SHOW_STEREO_FILL && chart.data.datasets.length < 2) {
             chart.data.datasets.push({
                 label: 'Signal Stereo',
                 borderColor: 'rgba(0,0,0,0)',
@@ -72,12 +77,14 @@
                 tension: 0.6,
                 pointRadius: 0,
                 spanGaps: false,
+                order: 2,
                 data: []
             });
         }
 
-        // Dataset 2 — RDS (nad Stereo)
-        if (chart.data.datasets.length < 3) {
+        // Dataset 2 — RDS (nad Stereo lub bezpośrednio po ds0)
+        const rdsDatasetIndex = SHOW_STEREO_FILL ? 3 : 2;
+        if (chart.data.datasets.length < rdsDatasetIndex) {
             chart.data.datasets.push({
                 label: 'Signal RDS',
                 borderColor: 'rgba(0,0,0,0)',
@@ -87,9 +94,13 @@
                 tension: 0.6,
                 pointRadius: 0,
                 spanGaps: false,
+                order: SHOW_STEREO_FILL ? 1 : 2,
                 data: []
             });
         }
+
+        // ds0 (mono) musi być na wierzchu żeby linia była widoczna
+        chart.data.datasets[0].order = 3;
 
         const realtime = chart.config.options.scales.x.realtime;
         const origOnRefresh = realtime.onRefresh;
@@ -106,10 +117,10 @@
                 (typeof isIPadOS !== 'undefined' && isIPadOS);
             if (mobile && (document.hidden || !document.hasFocus())) return;
 
-            const ds0    = c.data.datasets[0]?.data;
-            const dsSt   = c.data.datasets[1]?.data;
-            const dsRds  = c.data.datasets[2]?.data;
-            if (!ds0 || !dsSt || !dsRds) return;
+            const ds0  = c.data.datasets[0]?.data;
+            const dsSt = SHOW_STEREO_FILL ? c.data.datasets[1]?.data : null;
+            const dsRds = SHOW_STEREO_FILL ? c.data.datasets[2]?.data : c.data.datasets[1]?.data;
+            if (!ds0 || !dsRds) return;
 
             const pd = typeof parsedData !== 'undefined' ? parsedData : null;
             const rdsOn = pd && pd.rdsActive === true;
@@ -121,12 +132,16 @@
 
             // Stereo + RDS jednocześnie: obie warstwy muszą mieć ten sam y, żeby nie było
             // pionowych „dziur” między wypełnieniami (np. mono + RDS wcześniej zostawiało null na stereo).
-            const yStereoBand = (stereoOn || rdsOn) ? lastPt.y : null;
-            dsSt.push({ x: lastPt.x, y: yStereoBand });
-            if (dsSt.length > 400) dsSt.shift();
+            if (SHOW_STEREO_FILL && dsSt) {
+                const yStereoBand = (stereoOn || rdsOn) ? lastPt.y : null;
+                dsSt.push({ x: lastPt.x, y: yStereoBand });
+                if (dsSt.length > 400) dsSt.shift();
+            }
 
-            dsRds.push({ x: lastPt.x, y: rdsOn ? lastPt.y : null });
-            if (dsRds.length > 400) dsRds.shift();
+            if (dsRds) {
+                dsRds.push({ x: lastPt.x, y: rdsOn ? lastPt.y : null });
+                if (dsRds.length > 400) dsRds.shift();
+            }
         };
 
         chart.update('none');
