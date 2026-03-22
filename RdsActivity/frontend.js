@@ -31,15 +31,13 @@
             rdsSpan.textContent = 'RDS';
             rdsSpan.classList.add('opacity-half');
             rdsSpan.style.cssText = [
-                'margin-left: 8px',
-                'font-size: 22px',
+                'font-size: 21px',
                 'font-weight: bold',
                 'letter-spacing: 0.5px',
-
                 'vertical-align: middle',
                 'user-select: none',
             ].join(';');
-            container.insertAdjacentElement('afterend', rdsSpan);
+            container.insertAdjacentElement('beforebegin', rdsSpan);
         });
     }
 
