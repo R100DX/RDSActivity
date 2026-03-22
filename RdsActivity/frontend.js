@@ -1,3 +1,5 @@
+/// https://github.com/R100DX/RDSActivity ///
+
 (function () {
     'use strict';
 
