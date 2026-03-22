@@ -5,9 +5,9 @@
 
 The **RDS Activity** plugin adds visual RDS and stereo activity indicators to the signal chart in [fm-dx-webserver](https://github.com/NoobishSVK/fm-dx-webserver) - similar to how xdr-gtk displays this information.
 
-- **Green fill on the chart** — appears when a station is broadcasting RDS data
-- **Darker fill** — appears when a station is broadcasting in stereo (without RDS)
-- **RDS icon** next to the stereo indicator — lights up when RDS is detected
+- **Green fill on the chart** - appears when a station is broadcasting RDS data
+- **Darker fill** - appears when a station is broadcasting in stereo (without RDS)
+- **RDS icon** next to the stereo indicator - lights up when RDS is detected
 
 This makes it immediately clear from the signal chart when a station is transmitting RDS and stereo, without having to look at separate indicators.
 
