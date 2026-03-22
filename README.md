@@ -26,7 +26,11 @@ Fill colors can also be customized:
 const COLOR_STEREO_FILL = 'rgba(0, 130, 70, 0.35)';
 const COLOR_RDS_FILL    = 'rgba(0, 210, 120, 0.30)';
 ```
+### Requirements
 
+- [FM-DX Webserver](https://github.com/NoobishSVK/fm-dx-webserver) v1.4 or later
+
+  
 ### Installation
 
 1. Copy the files into your FM-DX Webserver `plugins/` directory:
