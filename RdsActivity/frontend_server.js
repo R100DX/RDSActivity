@@ -1,7 +1,3 @@
-// RdsActivity/frontend_server.js
-// Hookuje handleData w datahandlerze i ustawia dataToSend.rdsActive
-// oraz dataToSend.stereoActive. Zero zmian w datahandler.js.
-
 const { logInfo, logWarn } = require('../../server/console');
 const { serverConfig } = require('../../server/server_config');
 
