@@ -39,7 +39,7 @@ plugins/
     └── frontend_server.js
 ```
 
-2. Restart the webserver, go to Settings → Plugins and enable RDS Activity.
+2. Restart the webserver, go to Settings -> Plugins and enable RDS Activity.
 3. Restart the webserver again.
 
 > **Note:** This plugin's code was developed with the assistance of AI.
