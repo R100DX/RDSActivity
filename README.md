@@ -1,1 +1,1 @@
-![image alt](https://github.com/R100DX/RDSActivity/blob/6d9d1544e9bb01b8cb7892c5d79baa5872742ab3/webserwer.png)
+<img width="1177" height="765" alt="webserwer" src="https://github.com/user-attachments/assets/6ac00bd5-2de8-400d-b0d4-b8b01df8686e" />
