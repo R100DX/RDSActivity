@@ -67,6 +67,7 @@
                 'letter-spacing: 0.5px',
                 'vertical-align: middle',
                 'user-select: none',
+				'margin-left: 6px;',
             ].join(';');
             container.insertAdjacentElement('beforebegin', rdsSpan);
         });
