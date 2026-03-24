@@ -18,6 +18,7 @@ At the top of `RdsActivity/frontend.js` there are two options:
 ```javascript
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
 const SHOW_STEREO_FILL = true;   // stereo fill on the chart (true/false)
+const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme (true/false)
 ```
 
 Fill colors can also be customized:
