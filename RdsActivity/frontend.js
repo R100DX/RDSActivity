@@ -7,6 +7,9 @@
     const SHOW_RDS_ICON    = true;   // RDS icon next to the stereo indicator
     const SHOW_STEREO_FILL = true;   // stereo fill on the signal chart
     const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme
+    const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
+                                     // 1 = raw (no averaging), higher values produce a smoother line.
+                                     // null = disabled (use default averaging from main.js).
     // ─────────────────────────────────────────────────────────
 
     // Default colors (used when USE_THEME_COLOR = false)
@@ -153,17 +156,25 @@
         const realtime = chart.config.options.scales.x.realtime;
         const origOnRefresh = realtime.onRefresh;
 
+        // Local buffer — replaces the moving average from main.js
+        const rawBuffer = [];
+
         realtime.onRefresh = (c) => {
             origOnRefresh(c);
 
-            // Must be consistent with main.js (signal onRefresh): on desktop with hidden tab,
-            // dataset[0] still grows — if we always returned here, layers 1–2 wouldn't keep up
-            // with time and the Chart.js fill would "float" above the line after returning to the tab.
-            const mobile =
-                (typeof isAndroid !== 'undefined' && isAndroid) ||
-                (typeof isIOS !== 'undefined' && isIOS) ||
-                (typeof isIPadOS !== 'undefined' && isIPadOS);
-            if (mobile && (document.hidden || !document.hasFocus())) return;
+            // ── Signal averaging ──────────────────────────────────────────────
+            if (BUFFER_SIZE !== null && typeof parsedData !== 'undefined' && parsedData?.sig !== undefined) {
+                rawBuffer.push(parsedData.sig);
+                if (rawBuffer.length > BUFFER_SIZE) rawBuffer.shift();
+
+                const value = rawBuffer.reduce((sum, v) => sum + v, 0) / rawBuffer.length;
+                const ds0 = c.data.datasets[0].data;
+                if (ds0.length > 0) {
+                    ds0[ds0.length - 1] = { x: ds0[ds0.length - 1].x, y: value };
+                }
+            }
+            // ─────────────────────────────────────────────────────────────────
+
 
             const ds0  = c.data.datasets[0]?.data;
             const dsSt = SHOW_STEREO_FILL ? c.data.datasets[1]?.data : null;
