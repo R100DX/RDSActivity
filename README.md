@@ -13,7 +13,7 @@ This makes it immediately clear from the signal chart when a station is transmit
 
 ### Configuration options
 
-At the top of `RdsActivity/frontend.js` there are two options:
+At the top of `RdsActivity/frontend.js` there are four options:
 
 ```javascript
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
