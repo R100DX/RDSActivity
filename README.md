@@ -1,4 +1,4 @@
-<img width="1177" height="765" alt="webserwer" src="https://github.com/user-attachments/assets/6ac00bd5-2de8-400d-b0d4-b8b01df8686e" />
+<img width="1173" height="830" alt="web2" src="https://github.com/user-attachments/assets/5a8a73d3-93be-486b-8c28-9163a886ffc9" />
 
 
 ### What does this plugin do?
@@ -19,6 +19,9 @@ At the top of `RdsActivity/frontend.js` there are two options:
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
 const SHOW_STEREO_FILL = true;   // stereo fill on the chart (true/false)
 const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme (true/false)
+const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
+                                 // 1 = raw (no averaging), higher values produce a smoother line.
+                                 // null = disabled (use default averaging from main.js).
 ```
 
 Fill colors can also be customized:
