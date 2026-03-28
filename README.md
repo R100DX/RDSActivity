@@ -2,7 +2,7 @@
 
 # RDS Activity Plugin for FM-DX Webserver
 
-A plugin for [FM-DX Webserver](https://github.com/NoobishSVK/fm-dx-webserver) that visualizes RDS and stereo activity directly on the signal chart — inspired by the behavior of [xdr-gtk](https://github.com/kkonradpl/xdr-gtk).
+A plugin for [FM-DX Webserver](https://github.com/NoobishSVK/fm-dx-webserver) that visualizes RDS and stereo activity directly on the signal chart - inspired by the behavior of [xdr-gtk](https://github.com/kkonradpl/xdr-gtk).
 
 ## Features
 
