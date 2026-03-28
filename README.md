@@ -9,7 +9,7 @@ A plugin for [FM-DX Webserver](https://github.com/NoobishSVK/fm-dx-webserver) th
 - **Colored fill on the signal chart** - appears when a station is broadcasting RDS data
 - **Darker fill** - appears when a station is broadcasting in stereo (without RDS)
 - **RDS icon** next to the stereo indicator - lights up when RDS is detected
-- **Theme-aware colors** — the chart colors automatically match the selected webserver theme
+- **Theme-aware colors** - the chart colors automatically match the selected webserver theme
 - **Adjustable signal smoothing** - control how smooth or sharp the signal line looks on the chart
 - **Chart edge fix** - prevents flickering on the left edge of the signal chart
 
