@@ -1,4 +1,4 @@
-/// https://github.com/R100DX/RDSActivity ///
+/// RDSActivity v1.2 https://github.com/R100DX/RDSActivity ///
 
 (function () {
     'use strict';
@@ -10,6 +10,10 @@
     const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
                                      // 1 = raw (no averaging), higher values produce a smoother line.
                                      // null = disabled (use default averaging from main.js).
+    const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the chart's actual frameRate.
+                                     // Prevents flickering on the left edge of the signal chart.
+                                     // true  = auto-calculate from chart config (recommended).
+                                     // false = keep the original hardcoded limit of 400.
     // ─────────────────────────────────────────────────────────
 
     // Default colors (used when USE_THEME_COLOR = false)
@@ -150,17 +154,39 @@
             });
         }
 
-        // ds0 (mono) must be on top for the line to be visible
+        // ds0 (mono)
         chart.data.datasets[0].order = 3;
 
         const realtime = chart.config.options.scales.x.realtime;
         const origOnRefresh = realtime.onRefresh;
 
+        // Calculate the correct dataset size limit from chart config
+        const MAX_POINTS = FIX_MAX_POINTS
+            ? Math.ceil(realtime.duration / (1000 / realtime.frameRate))
+            : 400;
+
+        // Snapshot of ds0 before origOnRefresh runs — used to undo main.js's premature shift
+        let snapshotBeforeRefresh = null;
+
         // Local buffer — replaces the moving average from main.js
         const rawBuffer = [];
 
         realtime.onRefresh = (c) => {
+            // capture ds0 state before main.js runs ───────────────────
+            // main.js does: push → shift if length > 400.
+            // If ds0 has between 401 and MAX_POINTS elements, main.js will shift
+            // one point off the front prematurely. We snapshot the oldest point
+            // so we can put it back after origOnRefresh.
+            const ds0pre = FIX_MAX_POINTS ? c.data.datasets[0]?.data : null;
+            const shouldUndo = ds0pre && ds0pre.length >= 400 && ds0pre.length < MAX_POINTS;
+            const savedOldest = shouldUndo ? ds0pre[0] : null;
+
             origOnRefresh(c);
+
+            if (savedOldest !== null) {
+                const ds0post = c.data.datasets[0]?.data;
+                if (ds0post) ds0post.unshift(savedOldest);
+            }
 
             // ── Signal averaging ──────────────────────────────────────────────
             if (BUFFER_SIZE !== null && typeof parsedData !== 'undefined' && parsedData?.sig !== undefined) {
@@ -174,7 +200,6 @@
                 }
             }
             // ─────────────────────────────────────────────────────────────────
-
 
             const ds0  = c.data.datasets[0]?.data;
             const dsSt = SHOW_STEREO_FILL ? c.data.datasets[1]?.data : null;
@@ -194,12 +219,12 @@
             if (SHOW_STEREO_FILL && dsSt) {
                 const yStereoBand = (stereoOn || rdsOn) ? lastPt.y : null;
                 dsSt.push({ x: lastPt.x, y: yStereoBand });
-                if (dsSt.length > 400) dsSt.shift();
+                if (dsSt.length > MAX_POINTS) dsSt.shift();
             }
 
             if (dsRds) {
                 dsRds.push({ x: lastPt.x, y: rdsOn ? lastPt.y : null });
-                if (dsRds.length > 400) dsRds.shift();
+                if (dsRds.length > MAX_POINTS) dsRds.shift();
             }
         };
 
