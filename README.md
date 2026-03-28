@@ -1,13 +1,17 @@
 <img width="1173" height="830" alt="web2" src="https://github.com/user-attachments/assets/5a8a73d3-93be-486b-8c28-9163a886ffc9" />
 
+# RDS Activity Plugin for FM-DX Webserver
 
-### What does this plugin do?
+A plugin for [FM-DX Webserver](https://github.com/NoobishSVK/fm-dx-webserver) that visualizes RDS and stereo activity directly on the signal chart — inspired by the behavior of [xdr-gtk](https://github.com/kkonradpl/xdr-gtk).
 
-The **RDS Activity** plugin adds visual RDS and stereo activity indicators to the signal chart in [fm-dx-webserver](https://github.com/NoobishSVK/fm-dx-webserver) - similar to how xdr-gtk displays this information.
+## Features
 
-- **Green fill on the chart** - appears when a station is broadcasting RDS data
+- **Colored fill on the signal chart** - appears when a station is broadcasting RDS data
 - **Darker fill** - appears when a station is broadcasting in stereo (without RDS)
 - **RDS icon** next to the stereo indicator - lights up when RDS is detected
+- **Theme-aware colors** — the chart colors automatically match the selected webserver theme
+- **Adjustable signal smoothing** - control how smooth or sharp the signal line looks on the chart
+- **Chart edge fix** - prevents flickering on the left edge of the signal chart
 
 This makes it immediately clear from the signal chart when a station is transmitting RDS and stereo, without having to look at separate indicators.
 
@@ -22,9 +26,13 @@ const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme (t
 const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
                                  // 1 = raw (no averaging), higher values produce a smoother line.
                                  // null = disabled (use default averaging from main.js).
+const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the chart's actual frameRate.
+                                 // Prevents flickering on the left edge of the signal chart.
+                                 // true  = auto-calculate from chart config (recommended).
+                                 // false = keep the original hardcoded limit of 400.
 ```
 
-Fill colors can also be customized:
+**`USE_THEME_COLOR`** - when enabled, the RDS and stereo fill colors automatically follow the active webserver theme. When disabled, the colors defined below are used instead:
 
 ```javascript
 const COLOR_STEREO_FILL = 'rgba(0, 130, 70, 0.35)';
