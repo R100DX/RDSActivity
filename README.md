@@ -17,7 +17,7 @@ This makes it immediately clear from the signal chart when a station is transmit
 
 ### Configuration options
 
-At the top of `RdsActivity/frontend.js` there are six options:
+At the top of `RdsActivity/frontend.js` there are five options:
 
 ```javascript
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
@@ -26,10 +26,6 @@ const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme (t
 const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
                                  // 1 = raw (no averaging), higher values produce a smoother line.
                                  // null = disabled (use default averaging from main.js).
-const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the chart's actual frameRate.
-                                 // Prevents flickering on the left edge of the signal chart.
-                                 // true  = auto-calculate from chart config (recommended).
-                                 // false = keep the original hardcoded limit of 400.
 const FIX_MAX_POINTS = true;     // Prevents flickering on the left edge of the signal chart.
                                  // true  = auto-calculate from chart config (recommended).
                                  // false = keep the original hardcoded limit of 400.
