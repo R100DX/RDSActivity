@@ -1,4 +1,4 @@
-/// RDSActivity v1.2 https://github.com/R100DX/RDSActivity ///
+/// RDSActivity v1.3 https://github.com/R100DX/RDSActivity ///
 
 (function () {
     'use strict';
@@ -6,10 +6,13 @@
     // ── Options ──────────────────────────────────────────────
     const SHOW_RDS_ICON    = true;   // RDS icon next to the stereo indicator
     const SHOW_STEREO_FILL = true;   // stereo fill on the signal chart
-    const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme
+    const USE_THEME_COLOR = true;    // match chart colors to the webserver theme
+                                     // actual value is read from localStorage (can be toggled in Settings panel)
+									 
     const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
                                      // 1 = raw (no averaging), higher values produce a smoother line.
                                      // null = disabled (use default averaging from main.js).
+
     const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the chart's actual frameRate.
                                      // Prevents flickering on the left edge of the signal chart.
                                      // true  = auto-calculate from chart config (recommended).
@@ -23,7 +26,7 @@
     // Get the current theme accent color (--color-main-bright)
     // and generate RDS/stereo colors based on it
     function getThemeColors() {
-        if (!USE_THEME_COLOR) {
+        if (!isThemeColorEnabled()) {
             return {
                 stereo: COLOR_STEREO_FILL_DEFAULT,
                 rds:    COLOR_RDS_FILL_DEFAULT,
@@ -48,6 +51,48 @@
             rds:    `rgba(${r}, ${g}, ${b}, 0.30)`,
         };
     }
+
+    // Read USE_THEME_COLOR from localStorage
+    function isThemeColorEnabled() {
+        const stored = localStorage.getItem('rdsActivity_useThemeColor');
+        if (stored === null) return true; 
+    return stored === 'true';
+    }
+
+    // Add toggle checkbox to the Settings panel
+    function addSettingsCheckbox() {
+        const checkboxes = document.querySelectorAll('.modal-panel-content .form-group');
+        if (!checkboxes.length) return;
+        if (document.getElementById('rdsActivity-theme-color')) return;
+
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.innerHTML = `
+            <div class="switch flex-container flex-phone flex-phone-column flex-phone-center">
+                <input type="checkbox" tabindex="0" id="rdsActivity-theme-color" aria-label="Sync Chart Colors">
+                <label for="rdsActivity-theme-color" class="tooltip" data-tooltip="Match RDS and stereo chart colors to the active webserver theme."></label>
+                <span class="text-smaller text-uppercase text-bold color-4 p-10">Sync Chart Colors</span>
+            </div>
+        `;
+        checkboxes[checkboxes.length - 1].insertAdjacentElement('afterend', div);
+
+        const checkbox = document.getElementById('rdsActivity-theme-color');
+        checkbox.checked = isThemeColorEnabled();
+        checkbox.addEventListener('change', function () {
+            localStorage.setItem('rdsActivity_useThemeColor', this.checked);
+            if (_applyThemeColors) _applyThemeColors();
+        });
+    }
+
+    let _applyThemeColors = null;
+
+    // Observe settings modal opening
+    const modalObserver = new MutationObserver(() => {
+        if (document.querySelector('.modal-panel-content .form-group')) {
+            addSettingsCheckbox();
+        }
+    });
+    modalObserver.observe(document.body, { childList: true, subtree: true });
 
     function waitForChart(cb) {
         if (window.signalChart &&
@@ -106,8 +151,8 @@
         // Get colors from the theme (or defaults)
         const themeColors = getThemeColors();
 
-        // Update colors when the theme changes
-        function applyThemeColors() {
+        // Update colors when the theme changes or settings toggle changes
+        function applyThemeColorsGlobal() {
             const tc = getThemeColors();
             if (chart.data.datasets[1]) chart.data.datasets[1].fill.above = tc.stereo;
             const rdsIdx = SHOW_STEREO_FILL ? 2 : 1;
@@ -115,9 +160,11 @@
             chart.update('none');
         }
 
+        _applyThemeColors = applyThemeColorsGlobal;
+
         // Observe --color-main-bright changes (theme change)
-        if (USE_THEME_COLOR) {
-            const observer = new MutationObserver(() => applyThemeColors());
+        if (isThemeColorEnabled()) {
+            const observer = new MutationObserver(() => applyThemeColorsGlobal());
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
         }
 
@@ -172,7 +219,6 @@
         const rawBuffer = [];
 
         realtime.onRefresh = (c) => {
-            // capture ds0 state before main.js runs ───────────────────
             // main.js does: push → shift if length > 400.
             // If ds0 has between 401 and MAX_POINTS elements, main.js will shift
             // one point off the front prematurely. We snapshot the oldest point
@@ -180,6 +226,7 @@
             const ds0pre = FIX_MAX_POINTS ? c.data.datasets[0]?.data : null;
             const shouldUndo = ds0pre && ds0pre.length >= 400 && ds0pre.length < MAX_POINTS;
             const savedOldest = shouldUndo ? ds0pre[0] : null;
+            // ─────────────────────────────────────────────────────────────────
 
             origOnRefresh(c);
 
@@ -187,6 +234,7 @@
                 const ds0post = c.data.datasets[0]?.data;
                 if (ds0post) ds0post.unshift(savedOldest);
             }
+            // ─────────────────────────────────────────────────────────────────
 
             // ── Signal averaging ──────────────────────────────────────────────
             if (BUFFER_SIZE !== null && typeof parsedData !== 'undefined' && parsedData?.sig !== undefined) {
