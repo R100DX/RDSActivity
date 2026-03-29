@@ -22,7 +22,8 @@ At the top of `RdsActivity/frontend.js` there are five options:
 ```javascript
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
 const SHOW_STEREO_FILL = true;   // stereo fill on the chart (true/false)
-const USE_THEME_COLOR  = true;   // match chart colors to the webserver theme (true/false)
+const USE_THEME_COLOR = true;    // match chart colors to the webserver theme
+                                 // actual value is read from localStorage (can be toggled in Settings panel)
 const BUFFER_SIZE = 1;           // Number of samples used to average the signal value on the chart.
                                  // 1 = raw (no averaging), higher values produce a smoother line.
                                  // null = disabled (use default averaging from main.js).
