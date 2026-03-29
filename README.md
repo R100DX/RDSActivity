@@ -30,6 +30,9 @@ const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the char
                                  // Prevents flickering on the left edge of the signal chart.
                                  // true  = auto-calculate from chart config (recommended).
                                  // false = keep the original hardcoded limit of 400.
+ const FIX_MAX_POINTS = true;    // Prevents flickering on the left edge of the signal chart.
+                                 // true  = auto-calculate from chart config (recommended).
+                                 // false = keep the original hardcoded limit of 400.
 ```
 
 **`USE_THEME_COLOR`** - when enabled, the RDS and stereo fill colors automatically follow the active webserver theme. When disabled, the colors defined below are used instead:
