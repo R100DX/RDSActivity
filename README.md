@@ -17,7 +17,7 @@ This makes it immediately clear from the signal chart when a station is transmit
 
 ### Configuration options
 
-At the top of `RdsActivity/frontend.js` there are four options:
+At the top of `RdsActivity/frontend.js` there are six options:
 
 ```javascript
 const SHOW_RDS_ICON    = true;   // RDS icon next to stereo indicator (true/false)
@@ -30,7 +30,7 @@ const FIX_MAX_POINTS = true;     // Fix the dataset size limit to match the char
                                  // Prevents flickering on the left edge of the signal chart.
                                  // true  = auto-calculate from chart config (recommended).
                                  // false = keep the original hardcoded limit of 400.
- const FIX_MAX_POINTS = true;    // Prevents flickering on the left edge of the signal chart.
+const FIX_MAX_POINTS = true;     // Prevents flickering on the left edge of the signal chart.
                                  // true  = auto-calculate from chart config (recommended).
                                  // false = keep the original hardcoded limit of 400.
 ```
